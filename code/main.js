@@ -16,7 +16,6 @@ loadSound("intro", "./sounds/intro.mp3")
 loadSound("radio", "./sounds/radio.wav")
 
 loadPedit("meter", "sprites/meter.pedit")
-loadPedit("gameplay", "sprites/gameplay.pedit")
 loadPedit("plate", "sprites/plate.pedit")
 loadPedit("tteokbokki", "sprites/tteokbokki.pedit")
 loadSprite("shuttle", "sprites/shuttle.png");
