@@ -29,8 +29,6 @@ function createIntro() {
 
     generateSpice(center())
 
-    // TODO: Colorize "Enter" like for the "Press Y" in the ending screens.
-    // (Also, should we make that one use "Enter" instead of "Y" for consistency?)
     const skipText = add([
       text("Press [Enter].highlight to Skip...",
         {
@@ -208,12 +206,6 @@ function createIntro() {
         pos(center().x, height() * .5),
         origin("center"),
       ])
-    const tip1 =
-      add([
-        sprite("gameplay"),
-        origin("center"),
-        pos(width() * .9, height() * .5)
-      ])
     const tip2 =
       add([
         sprite("astro"),
@@ -223,10 +215,6 @@ function createIntro() {
       ])
 
     wait(6, () => {
-      instructions.text = `Press Spacebar\n to use thrust\n to propel the astronaut\n
-        Press the arrow keys to change\n the astronaut's direction\n`
-    })
-    wait(12, () => {
       instructions.text = `For Tteokbokki you need: 3 X Chili Flakes`
       const item1 = add([
         sprite("chiliFlakes"),
@@ -234,7 +222,7 @@ function createIntro() {
         pos(width() * .1, height() * .2)
       ])
     })
-    wait(15, () => {
+    wait(9, () => {
       instructions.text = `For Tteokbokki you need: 5 X Gochujang Tins`
 
       const item2 = add([
@@ -243,7 +231,7 @@ function createIntro() {
         pos(width() * .5, height() * .2)
       ])
     })
-    wait(18, () => {
+    wait(12, () => {
       instructions.text = `For Tteokbokki you need: 5 X Bags of Rice`
 
       const item3 = add([
@@ -252,7 +240,7 @@ function createIntro() {
         pos(width() * .9, height() * .2)
       ])
     })
-    wait(24, () => {
+    wait(18, () => {
       startInstructions.text = `Press [ENTER].highlight to START`
 
       const tip3 =

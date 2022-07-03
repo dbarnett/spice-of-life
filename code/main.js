@@ -27,8 +27,10 @@ loadPedit("gochujang", "sprites/gochujang.pedit")
 loadSprite("astro", "sprites/astro.gif")
 loadPedit("airjet", "sprites/airjet.pedit")
 loadSprite("spacestation", "sprites/spacestation.png")
-loadPedit("comet", "sprites/comet.pedit");
-loadPedit("ufo", "sprites/ufo.pedit");
+loadPedit("comet", "sprites/comet.pedit")
+loadPedit("ufo", "sprites/ufo.pedit")
+loadPedit("keys-arrows", "sprites/keys-arrows.pedit")
+loadPedit("keys-spacebar", "sprites/keys-spacebar.pedit")
 
 randSeed(Date.now())
 const itemQtys = [0, 0, 0]

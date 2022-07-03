@@ -92,7 +92,7 @@ Basic instructions for publishing an updated version to itch.io are:
 2. [Install itch.io butler] if not already installed
 3. Unpack and change directory into the root (should see dist/, sprites/ etc)
 4. Edit dist/game.js to add `loadRoot("../")` before the first call to `loadSound` and other `loadFoo` helpers
-5. In dist/index.html, change any `/dist/*.js` to `./*.js` and delete the replit-badge part
+5. In dist/index.html, change any `/dist/*.js` to `./*.js`
 6. Log in to itch.io in butler: `butler login`
 7. Push the files to the "web" channel:
    ```sh

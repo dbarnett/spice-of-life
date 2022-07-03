@@ -2,14 +2,20 @@ import { parallax } from "./components"
 import { generatePointer, generateSpice, generateStars, pullCamTowards, setupAirJets, textTransformCycleColors } from "./helpers"
 
 function createSpaceScene(itemQtys) {
-  let alarm = null;
+  let alarm = null
+  const usedKeysData = {
+    arrows: false,
+    spacebar: false,
+  }
 
   scene("space", () => {
     const music = play("music", {
       volume: 0.8,
       loop: true
     })
-  
+
+    // TODO: Add objects to appropriate layer() instead of z().
+
     // Stars with some parallax that tracks w/ astronaut's motion
     generateStars()
   
@@ -149,7 +155,7 @@ function createSpaceScene(itemQtys) {
       music.stop()
       go("homesafe")
     })
-  
+
     generatePointer()
     onUpdate(() => {
       const pointerParts = get("pointer")
@@ -351,7 +357,70 @@ function createSpaceScene(itemQtys) {
       alarm.stop()
       oxDisplay.textPrefix = ""
     })
+
+    onKeyPress(["left", "right"], () => {
+      usedKeysData.arrows = true
+    })
+    onKeyPress("space", () => {
+      usedKeysData.spacebar = true
+    })
+    maybeShowQuickInstructions(usedKeysData)
+
   })
+}
+
+/** Show quick instructions for controls (arrows, space) if user hasn't already pressed them. */
+function maybeShowQuickInstructions(usedKeysData) {
+  if (!usedKeysData.arrows) {
+    const instructionsSprite = add([
+      sprite("keys-arrows", {
+        anim: "pressing",
+        animSpeed: .5,
+      }),
+      scale(2.5),
+      pos(center().x, height() - 5),
+      origin("bot"),
+      fixed(),
+    ])
+    const instructionsText = add([
+      text("Arrows to steer", { size: 20 }),
+      pos(instructionsSprite.pos.sub(0, instructionsSprite.height + 25)),
+      origin("bot"),
+      fixed(),
+    ])
+    onKeyPress(["left", "right"], () => {
+      instructionsText.destroy()
+      instructionsSprite.destroy()
+      maybeShowSpaceInstructions(usedKeysData)
+    })
+  } else {
+    maybeShowSpaceInstructions(usedKeysData)
+  }
+}
+
+function maybeShowSpaceInstructions(usedKeysData) {
+  if (!usedKeysData.spacebar) {
+    const instructionsSprite = add([
+      sprite("keys-spacebar", {
+        anim: "pressing",
+        animSpeed: .5,
+      }),
+      scale(2.5),
+      pos(center().x, height() - 5),
+      origin("bot"),
+      fixed(),
+    ])
+    const instructionsText = add([
+      text("Space to thrust", { size: 20 }),
+      pos(instructionsSprite.pos.sub(0, instructionsSprite.height + 10)),
+      origin("bot"),
+      fixed(),
+    ])
+    onKeyPress("space", () => {
+      instructionsText.destroy()
+      instructionsSprite.destroy()
+    })
+  }
 }
 
 export { createSpaceScene }
