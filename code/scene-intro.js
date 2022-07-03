@@ -1,6 +1,6 @@
 // Define a scene called "opening" that goes to the scene called "space" when it's finished
 
-import { generateSpice, textTransformAppearByLetter } from "../helpers"
+import { generateSpice, textTransformAppearByLetter } from "./helpers"
 
 function createIntro() {
   let intro

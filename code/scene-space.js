@@ -1,5 +1,5 @@
-import { parallax } from "../components"
-import { generatePointer, generateSpice, generateStars, pullCamTowards, setupAirJets, textTransformCycleColors } from "../helpers"
+import { parallax } from "./components"
+import { generatePointer, generateSpice, generateStars, pullCamTowards, setupAirJets, textTransformCycleColors } from "./helpers"
 
 function createSpaceScene(itemQtys) {
   let alarm = null;

@@ -1,7 +1,7 @@
 import kaboom from "kaboom"
-import { createIntro } from "./scenes/intro"
-import { createSpaceScene } from "./scenes/space"
-import { createEndings } from "./scenes/ending"
+import { createIntro } from "./scene-intro"
+import { createSpaceScene } from "./scene-space"
+import { createEndings } from "./scene-ending"
 
 // initialize context
 kaboom({
