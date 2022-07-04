@@ -72,6 +72,8 @@ When the shuttle is off-screen, a pointer appears along the appropriate edge of 
 
 This works by projecting a line from the astronaut back to the shuttle to determine where it intersects the edge of the screen (technically a line just inside of the edge).
 
+![Illustration of geometry for shuttle pointer](diagrams/shuttle_pointer_annotated.gif)
+
 The pointer is made up of a few shapes stacked on top of each other to render a tiny image of the shuttle inside a circle with a pointer triangle sticking out from it. Then they're all tagged and moved simultaneously in onUpdate to put the pointer in the right place. Finally, the pointer "triangle" (which actually a partially-covered square) is rotated around an origin at the circle's center to point in the exact direction of the shuttle.
 
 ### Color strobing
