@@ -1,5 +1,14 @@
 import { parallax } from "./components"
 
+/** Maps ranges like mapc, but maps to a color instead of another number. */
+function mapcColor(v, lv, hv, lc, hc) {
+  return rgb(
+    mapc(v, lv, hv, lc.r, hc.r),
+    mapc(v, lv, hv, lc.g, hc.g),
+    mapc(v, lv, hv, lc.b, hc.b),
+  )
+}
+
 // Return text CharTransformFunc for animating text to appear letter-by-letter.
 function textTransformAppearByLetter(rate) {
   const t0 = time()
@@ -103,7 +112,7 @@ function generateSpice(centerPoint) {
 function generateStars() {
   const stars = []
   // Add near stars
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 200; i++) {
     const star = add([
       rect(3, 3),
       WHITE,
@@ -114,7 +123,7 @@ function generateStars() {
     stars.push(star)
   }
   // Add far stars
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 500; i++) {
     const star = add([
       rect(1, 1),
       WHITE,
@@ -194,23 +203,16 @@ function pullCamTowards(target) {
   )))
 }
 
-// Generates a pointer towards shuttle with tag "pointer".
+/** Generates a pointer towards shuttle with tag "pointer". */
 function generatePointer() {
   // Blue ring with black circle inside
   const pointerCircle = add([
-    circle(20),
-    color(BLUE.darken(127)),
+    circle(18),
+    color(BLACK),
+    outline(3, BLUE.darken(127)),
     origin("center"),
     pos(),
     fixed(),
-    "pointer",
-  ])
-  add([
-    circle(17),
-    color(BLACK),
-    pos(),
-    fixed(),
-    follow(pointerCircle),
     "pointer",
   ])
   // Small image of shuttle in the circle
@@ -239,4 +241,13 @@ function generatePointer() {
   ])
 }
 
-export { textTransformAppearByLetter, textTransformCycleColors, generateSpice, generateStars, setupAirJets, pullCamTowards, generatePointer }
+export {
+  mapcColor,
+  textTransformAppearByLetter,
+  textTransformCycleColors,
+  generateSpice,
+  generateStars,
+  setupAirJets,
+  pullCamTowards,
+  generatePointer
+}

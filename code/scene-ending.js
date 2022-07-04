@@ -1,3 +1,4 @@
+import { mapcColor } from './helpers'
 
 function createEndings(itemQtys) {
   scene("homesafe", () => {
@@ -41,7 +42,24 @@ function createEndings(itemQtys) {
     const sadMusic = play("sadMusic", {
       volume: 0.8,
     })
-    // TODO: Add astronaut sprite lifelessly floating out in space.
+
+    // Astronaut sprite lifelessly floating out in space.
+    const astronaut = add([
+      sprite("astro"),
+      scale(7),
+      color(),
+      pos(width() * .7, height() * .3),
+      origin("center"),
+      rotate(-15),
+    ])
+    const t0 = time()
+    const c1 = astronaut.color.clone()
+    astronaut.onUpdate(() => {
+      astronaut.color = mapcColor(time() - t0, 0, 10, c1, BLACK)
+      astronaut.angle += dt() * 3
+      astronaut.move(3, -3)
+    })
+
     const gameOverTitle = add([
       text("Space is a Cold Place...", { size: 30 }),
       pos(center()),

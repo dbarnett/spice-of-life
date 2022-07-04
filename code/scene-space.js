@@ -171,9 +171,8 @@ function createSpaceScene(itemQtys) {
         screenPos.y - yMargin < height()
   
       // Around each screen edge, test if the line
-      // between player and shuttle intersects that edge.
+      // between screen center and shuttle intersects that edge.
       // If so, place pointer along that edge.
-      // TODO: Apparently if you go far enough up this will show the pointer on the top instead of bottom.
       const corners = [
         vec2(.1, .1),
         vec2(.9, .1),
@@ -388,7 +387,8 @@ function maybeShowQuickInstructions(usedKeysData) {
       origin("bot"),
       fixed(),
     ])
-    onKeyPress(["left", "right"], () => {
+    const cancelArrowsHandler = onKeyPress(["left", "right"], () => {
+      cancelArrowsHandler()
       instructionsText.destroy()
       instructionsSprite.destroy()
       maybeShowSpaceInstructions(usedKeysData)
