@@ -3,13 +3,68 @@
 import { generateSpice, textTransformAppearByLetter } from "./helpers"
 
 function createIntro() {
-  let intro
+  let introMusic
+  let crewTextObj
+  let crewTextBoundingBox
 
-  scene("opening", () => {
-    intro = play("intro", {
+  const goToGame = () => {
+    introMusic.stop()
+    go("space")
+  }
+
+  const showCrewText = (crewText) => {
+    if (crewTextObj) {
+      crewTextObj.destroy()
+    }
+    if (crewTextBoundingBox) {
+      crewTextBoundingBox.destroy()
+    }
+    // Play a little radio sound before crew message.
+    play("radio", { speed: 1.5, volume: .3 })
+    crewTextObj = add([
+      text(crewText, {
+        size: 20,
+        styles: {
+          "spice": { color: RED.lighten(90) }
+        },
+      }),
+      origin("center"),
+      pos(width() * .5, height() - 30),
+    ])
+    crewTextObj.hidden = true
+
+    // Add a nice bounding box for decoration around the
+    // spoken text.
+    const boundingBoxSize = vec2(
+      crewTextObj.width + 10,
+      crewTextObj.height + 10)
+    crewTextBoundingBox = add([
+      // Grows from 0 to boundingBoxSize
+      rect(crewTextObj.width + 10, crewTextObj.height + 10),
+      color(BLACK.lighten(64)),
+      opacity(0.4),
+      outline(1, BLACK.lighten(48)),
+      pos(crewTextObj.pos),
+      origin("center"),
+      z(-1),
+    ])
+    const t0 = time()
+    crewTextBoundingBox.onUpdate(() => {
+      crewTextBoundingBox.width = mapc(time() - t0, 0, .1, 0, boundingBoxSize.x)
+      crewTextBoundingBox.height = mapc(time() - t0, 0, .1, 0, boundingBoxSize.y)
+    })
+    wait(.1, () => {
+      crewTextObj.hidden = false
+      crewTextObj.transform = textTransformAppearByLetter(.02)
+    })
+  }
+
+  scene("opening", async () => {
+    introMusic = play("intro", {
       volume: 0.8,
       loop: true
     })
+    addPressEnter(goToGame)
 
     const ship = add([
       sprite("cargoShip"),
@@ -23,66 +78,25 @@ function createIntro() {
       scale(2),
       pos(width() + 100, height() - 200),
       origin("topright"),
-      rotate(2),
+      move(LEFT, 20),
       z(10)
     ])
 
     generateSpice(center())
 
-    const skipText = add([
-      text("Press [Enter].highlight to Skip...",
-        {
-          size: 20,
-          styles: {
-            "highlight": { color: YELLOW.lighten(120) },
-          }
-        }),
-      origin("center"),
-      pos(width() * .25, height() * .1)
-    ])
-    onKeyPress("enter", () => {
-      intro.stop()
-      go("space")
-    })
+    showCrewText(`You know, it's been ten years since we've had anything other
+      than powdered nutritional dust...`)
 
-    // Play a little radio sound before crew message.
-    // TODO: Add a nice bounding box for decoration around the
-    // spoken text?
-    play("radio", { speed: 1.5, volume: .3 })
-    const conversation = add([
-      text(`You know, it's been ten years since we've had anything other
-          than powdered nutritional dust...`, {
-        size: 20,
-        transform: textTransformAppearByLetter(.02),
-        styles: {
-          "spice": { color: RED.lighten(90) }
-        },
-      }),
-      origin("center"),
-      pos(width() * .5, height() - 30)
-
-    ])
-    crew.onUpdate(() => {
-      crew.pos.x -= dt() * 30
-    })
-
-    wait(7, () => {
-      play("radio", { speed: 1.5, volume: .3 })
-      conversation.text = "... I CAN'T LIVE LIKE THIS ANYMORE!!"
-      // Reset text animation
-      conversation.transform = textTransformAppearByLetter(.02)
-    })
-    wait(12, () => {
-      play("radio", { speed: 1.5, volume: .3 })
-      conversation.text = "... Do you know what I miss? [Spicy].spice things like..."
-      conversation.transform = textTransformAppearByLetter(.02)
-    })
-    wait(16, () => {
-      go("opening2")
-    })
+    await wait(7)
+    showCrewText("... I CAN'T LIVE LIKE THIS ANYMORE!!")
+    await wait(5)
+    showCrewText("... Do you know what I miss? [Spicy].spice things like...")
+    await wait(4)
+    go("opening2")
   })
 
-  scene("opening2", () => {
+  scene("opening2", async () => {
+    onKeyPress("enter", goToGame)
     const food = add([
       sprite("tteokbokki"),
       scale(2),
@@ -92,7 +106,7 @@ function createIntro() {
       "food"
     ])
 
-    const conversation = add([
+    add([
       text(`Tteokbokki`, {
         size: 100,
         // Transform each character for special effects
@@ -103,15 +117,21 @@ function createIntro() {
       origin("center"),
       pos(center())
     ])
+    await wait(2)
 
-    wait(5, () => {
-      go("opening3")
+    const t0 = time()
+    food.onUpdate(() => {
+      food.opacity = mapc(time() - t0, 0, 3, 1.0, 0.0)
     })
+    await wait(3)
+
+    go("opening3")
   })
 
-  scene("opening3", () => {
+  scene("opening3", async () => {
+    addPressEnter(goToGame)
 
-    const ship = add([
+    add([
       sprite("cargoShip"),
       scale(2),
       pos(center().add(100, 50)),
@@ -123,63 +143,33 @@ function createIntro() {
       scale(2),
       pos(width() * .5, height() - 200),
       origin("topright"),
-      rotate(2),
-      z(10)
+      z(10),
     ])
+    let crewSpeed = 10
+    crew.onUpdate(() => {
+      crew.pos.x -= dt() * crewSpeed
+    })
 
     generateSpice(center())
 
-    play("radio", { speed: 1.5, volume: .3 })
-    const conversation = add([
-      text(`... Look outside...`, {
-        size: 20,
-        transform: textTransformAppearByLetter(.02),
-      }),
-      origin("center"),
-      pos(width() * .5, height() - 30),
-    ])
+    showCrewText(`... Look outside...`)
+    await wait(4)
 
-    wait(4, () => {
-      play("radio", { speed: 1.5, volume: .3 })
-      conversation.text = "That broken down ship left behind food everywhere..."
-      // Reset text animation
-      conversation.transform = textTransformAppearByLetter(.02)
-    })
-    wait(8, () => {
-      play("radio", { speed: 1.5, volume: .3 })
-      conversation.text = "It has everything we need for Tteokbokki..."
-      conversation.transform = textTransformAppearByLetter(.02)
-    })
-    wait(12, () => {
-      play("radio", { speed: 1.5, volume: .3 })
-      conversation.text = "STOP THE SHUTTLE!"
-      conversation.transform = textTransformAppearByLetter(.02)
-    })
-    wait(15, () => go("title"))
-    crew.onUpdate(() => {
-      crew.pos.x -= dt() * 10
-    })
-    const skipText = add([
-      text("Press [Enter].highlight to Skip...",
-        {
-          size: 20,
-          styles: {
-            "highlight": { color: YELLOW.lighten(120) },
-          }
-        }),
-      origin("center"),
-      pos(width() * .25, height() * .1)
-    ])
-    onKeyPress("enter", () => {
-      intro.stop()
-      go("space")
-    })
+    showCrewText("That broken down ship left behind food everywhere...")
+    await wait(4)
 
+    showCrewText("It has everything we need for Tteokbokki...")
+    await wait(4)
+
+    showCrewText("STOP THE SHUTTLE!")
+    crewSpeed = 5
+    await wait(3)
+
+    go("title")
   })
 
-
-  scene("title", () => {
-
+  scene("title", async () => {
+    onKeyPress("enter", goToGame)
     const startInstructions =
       add([
         text(`Press [ENTER].highlight to SKIP instructions...`,
@@ -206,75 +196,82 @@ function createIntro() {
         pos(center().x, height() * .5),
         origin("center"),
       ])
-    const tip2 =
+    add([
+      sprite("astro"),
+      scale(3),
+      origin("center"),
+      pos(width() * .1, height() * .5)
+    ])
+    await wait(6)
+
+    instructions.text = `For Tteokbokki you need:\n3 X Chili Flakes`
+    const item1 = add([
+      sprite("chiliFlakes"),
+      origin("center"),
+      pos(width() * .1, height() * .2)
+    ])
+    await wait(3)
+
+    instructions.text = `For Tteokbokki you need:\n5 X Gochujang Tins`
+    const item2 = add([
+      sprite("gochujang"),
+      origin("center"),
+      pos(width() * .5, height() * .2)
+    ])
+    await wait(3)
+
+    instructions.text = `For Tteokbokki you need:\n5 X Bags of Rice`
+
+    const item3 = add([
+      sprite("rice"),
+      origin("center"),
+      pos(width() * .9, height() * .2)
+    ])
+    await wait(6)
+
+    startInstructions.text = `Press [ENTER].highlight to START`
+
+    const o2Tip =
       add([
-        sprite("astro"),
-        scale(3),
+        sprite("meter"),
         origin("center"),
-        pos(width() * .1, height() * .5)
+        pos(width() * .1, height() * .8)
       ])
-
-    wait(6, () => {
-      instructions.text = `For Tteokbokki you need: 3 X Chili Flakes`
-      const item1 = add([
-        sprite("chiliFlakes"),
+    const o2TipText = add([
+      text("O2 Meter", { size: 20 }),
+      origin("center"),
+      pos(width() * .1, height() * .95)
+    ])
+    const shuttleTip =
+      add([
+        sprite("shuttle"),
         origin("center"),
-        pos(width() * .1, height() * .2)
+        scale(2),
+        pos(width() * .9, height() * .8)
       ])
-    })
-    wait(9, () => {
-      instructions.text = `For Tteokbokki you need: 5 X Gochujang Tins`
-
-      const item2 = add([
-        sprite("gochujang"),
-        origin("center"),
-        pos(width() * .5, height() * .2)
-      ])
-    })
-    wait(12, () => {
-      instructions.text = `For Tteokbokki you need: 5 X Bags of Rice`
-
-      const item3 = add([
-        sprite("rice"),
-        origin("center"),
-        pos(width() * .9, height() * .2)
-      ])
-    })
-    wait(18, () => {
-      startInstructions.text = `Press [ENTER].highlight to START`
-
-      const tip3 =
-        add([
-          sprite("meter"),
-          origin("center"),
-          pos(width() * .1, height() * .8)
-        ])
-      const tip3Text = add([
-        text("O2 Meter", { size: 20 }),
-        origin("center"),
-        pos(width() * .1, height() * .95)
-      ])
-      const tip4 =
-        add([
-          sprite("shuttle"),
-          origin("center"),
-          scale(2),
-          pos(width() * .9, height() * .8)
-        ])
-      const tip4Text = add([
-        text("Shuttle", { size: 20 }),
-        origin("center"),
-        pos(width() * .9, height() * .9)
-      ])
-      instructions.text = `Just make sure you\n watch your O2 meter so you get back\n to the shuttle before running out of oxygen!!\n\n\n\n`
-    })
-
-    onKeyPress("enter", () => {
-      intro.stop()
-      go("space")
-    })
+    const shuttleTipText = add([
+      text("Shuttle", { size: 20 }),
+      origin("center"),
+      pos(width() * .9, height() * .9)
+    ])
+    instructions.text = `Just make sure you\nwatch your O2 meter so you get back\nto the shuttle before running out of oxygen!!`
   })
 
+}
+
+function addPressEnter(enterAction) {
+  onKeyPress("enter", enterAction)
+  return add([
+    text("Press [Enter].highlight to Skip...",
+      {
+        size: width() > 600 ? 20 : 14,
+        styles: {
+          "highlight": { color: YELLOW.lighten(120) },
+        }
+      }),
+    origin("center"),
+    pos(width() * .25, height() * .1)
+  ])
 }
 
 export { createIntro }
