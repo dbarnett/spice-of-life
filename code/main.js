@@ -18,7 +18,7 @@ loadSound("radio", "./sounds/radio.wav")
 loadPedit("meter", "sprites/meter.pedit")
 loadPedit("plate", "sprites/plate.pedit")
 loadPedit("tteokbokki", "sprites/tteokbokki.pedit")
-loadSprite("shuttle", "sprites/shuttle.png");
+loadSprite("shuttle", "sprites/shuttle.png")
 loadPedit("cargoShip", "sprites/cargoShip.pedit")
 loadPedit("rice", "sprites/rice.pedit")
 loadPedit("chiliFlakes", "sprites/chiliFlakes.pedit")
@@ -33,6 +33,15 @@ loadPedit("keys-spacebar", "sprites/keys-spacebar.pedit")
 
 randSeed(Date.now())
 const itemQtys = [0, 0, 0]
+
+layers(
+  [
+    "bg",
+    "game",
+    "ui",
+  ],
+  "game",
+)
 
 createIntro()
 createSpaceScene(itemQtys)

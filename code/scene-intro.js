@@ -1,62 +1,28 @@
-// Define a scene called "opening" that goes to the scene called "space" when it's finished
-
 import { generateSpice, textTransformAppearByLetter } from "./helpers"
 
+/** Define a scene called "opening" that goes to the scene called "space" when it's finished. */
 function createIntro() {
   let introMusic
-  let crewTextObj
-  let crewTextBoundingBox
 
   const goToGame = () => {
     introMusic.stop()
     go("space")
   }
 
-  const showCrewText = (crewText) => {
-    if (crewTextObj) {
-      crewTextObj.destroy()
-    }
-    if (crewTextBoundingBox) {
-      crewTextBoundingBox.destroy()
-    }
+  const showCrewText = async (crewText) => {
+    await shrinkAndDestroyConvoText()
+
     // Play a little radio sound before crew message.
     play("radio", { speed: 1.5, volume: .3 })
-    crewTextObj = add([
-      text(crewText, {
+    showAnimatedConvoTextWithBorder(
+      crewText,
+      {
         size: 20,
         styles: {
-          "spice": { color: RED.lighten(90) }
+          "spice": { color: RED.lighten(90) },
         },
-      }),
-      origin("center"),
-      pos(width() * .5, height() - 30),
-    ])
-    crewTextObj.hidden = true
-
-    // Add a nice bounding box for decoration around the
-    // spoken text.
-    const boundingBoxSize = vec2(
-      crewTextObj.width + 10,
-      crewTextObj.height + 10)
-    crewTextBoundingBox = add([
-      // Grows from 0 to boundingBoxSize
-      rect(crewTextObj.width + 10, crewTextObj.height + 10),
-      color(BLACK.lighten(64)),
-      opacity(0.4),
-      outline(1, BLACK.lighten(48)),
-      pos(crewTextObj.pos),
-      origin("center"),
-      z(-1),
-    ])
-    const t0 = time()
-    crewTextBoundingBox.onUpdate(() => {
-      crewTextBoundingBox.width = mapc(time() - t0, 0, .1, 0, boundingBoxSize.x)
-      crewTextBoundingBox.height = mapc(time() - t0, 0, .1, 0, boundingBoxSize.y)
-    })
-    wait(.1, () => {
-      crewTextObj.hidden = false
-      crewTextObj.transform = textTransformAppearByLetter(.02)
-    })
+      },
+      vec2(width() * .5, height() - 30))
   }
 
   scene("opening", async () => {
@@ -86,12 +52,14 @@ function createIntro() {
 
     showCrewText(`You know, it's been ten years since we've had anything other
       than powdered nutritional dust...`)
-
     await wait(7)
+
     showCrewText("... I CAN'T LIVE LIKE THIS ANYMORE!!")
     await wait(5)
     showCrewText("... Do you know what I miss? [Spicy].spice things like...")
     await wait(4)
+
+    await shrinkAndDestroyConvoText()
     go("opening2")
   })
 
@@ -165,6 +133,7 @@ function createIntro() {
     crewSpeed = 5
     await wait(3)
 
+    await shrinkAndDestroyConvoText()
     go("title")
   })
 
@@ -254,7 +223,7 @@ function createIntro() {
       origin("center"),
       pos(width() * .9, height() * .9)
     ])
-    instructions.text = `Just make sure you\nwatch your O2 meter so you get back\nto the shuttle before running out of oxygen!!`
+    instructions.text = `Find the ingredients for Tteokbokki\n\nJust make sure you\nwatch your O2 meter so you get back\nto the shuttle before running out of oxygen!!`
   })
 
 }
@@ -272,6 +241,70 @@ function addPressEnter(enterAction) {
     origin("center"),
     pos(width() * .25, height() * .1)
   ])
+}
+
+async function showAnimatedConvoTextWithBorder(convoText, textOpts, textPos) {
+  const textObj = add([
+    text(convoText, textOpts),
+    origin("center"),
+    pos(textPos),
+    layer("ui"),
+    z(1),
+    "convoText",
+  ])
+  textObj.hidden = true
+
+  // Add a nice bounding box for decoration around the
+  // spoken text.
+  const boxSize = vec2(
+    textObj.width + 10,
+    textObj.height + 10)
+  const textBox = add([
+    // Grows from 0 to boxSize
+    rect(textObj.width + 10, textObj.height + 10),
+    color(BLACK.lighten(64)),
+    opacity(0.4),
+    outline(1, BLACK.lighten(48)),
+    pos(textObj.pos),
+    origin("center"),
+    layer("ui"),
+    z(0),
+    "convoText",
+  ])
+  // Round corners
+  textBox.radius = 5
+  const t0 = time()
+  textBox.onUpdate(() => {
+    textBox.width = mapc(time() - t0, 0, .1, 0, boxSize.x)
+    textBox.height = mapc(time() - t0, 0, .1, 0, boxSize.y)
+  })
+  await wait(.1)
+  textObj.hidden = false
+  textObj.transform = textTransformAppearByLetter(.02)
+}
+
+async function shrinkAndDestroyConvoText() {
+  const t0 = time()
+  let anyAnimating = false
+  get("convoText").forEach(obj => {
+    // Destroy text immediately
+    if (obj.text) {
+      obj.destroy()
+    } else {
+      anyAnimating = true
+      // Shrink bounding box before destroying
+      const { width, height } = obj
+      obj.onUpdate(() => {
+        obj.width = mapc(time() - t0, 0, .1, width, 0)
+        obj.height = mapc(time() - t0, 0, .1, height, 0)
+      })
+    }
+  })
+  if (anyAnimating) {
+    await wait(.1)
+  }
+  // Destroy everything after animations
+  destroyAll("convoText")
 }
 
 export { createIntro }
