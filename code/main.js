@@ -9,7 +9,7 @@ kaboom({
 })
 
 loadSound("music", "./sounds/music.mp3")
-loadSound("alarm", "./sounds/alarm.wav")
+loadSound("alarm", "./sounds/alarm.mp3")
 loadSound("sadMusic", "./sounds/sadMusic.mp3")
 loadSound("happyMusic", "./sounds/happyMusic.mp3")
 loadSound("intro", "./sounds/intro.mp3")
