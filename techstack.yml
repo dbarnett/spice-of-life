@@ -2,7 +2,7 @@ repo_name: dbarnett/spice-of-life
 report_id: 91cd630b583c40de7949b980de8844bc
 version: 0.1
 repo_type: Public
-timestamp: '2024-01-05T08:32:50+00:00'
+timestamp: '2024-02-29T18:54:30+00:00'
 requested_by: dbarnett
 provider: github
 branch: main
@@ -69,7 +69,7 @@ tools:
   detection_source_url: https://github.com/dbarnett/spice-of-life
   detection_source: Repo Metadata
 - name: Nix
-  description: 'A package manager for Linux and other Unix systems '
+  description: A package manager for Linux and other Unix systems
   website_url: http://nixos.org/nix
   license: LGPL-2.1
   open_source: true
